@@ -43,19 +43,48 @@ async function main() {
 
             const data = await getFeedData(selectedFeed);
 
-
             // const feedName =
             //     feedAddress === process.env.BSC_FEED_ADDRESS
             //         ? "BNB/USD"
             //         : "USDT/USD";
 
             console.log(`\n========== ${data.name} ==========\n`);
-
-            console.log("Round ID          :", data.roundId);
             console.log("Price             :", data.price, "USD");
-            console.log("Started At        :", data.startedAt);
-            console.log("Updated At        :", data.updatedAt);
-            console.log("Answered In Round :", data.answeredInRound);
+            console.log(`\n==============================\n`);
+            break;
+
+        case "get":
+            const getSelectedFeed = feeds[symbol]; // change BNB or USDT here
+
+            if (!getSelectedFeed) {
+                console.log("\n");
+                console.log("Unknown feed.");
+                console.log("\nAvailable feeds:");
+
+                Object.keys(feeds).forEach(feed => {
+                    console.log("-", feed);
+                });
+
+                return;
+            }
+
+            const getData = await getFeedData(getSelectedFeed);
+
+
+            // const feedName =
+            //     feedAddress === process.env.BSC_FEED_ADDRESS
+            //         ? "BNB/USD"
+            //         : "USDT/USD";
+
+            console.log(`\n========== ${getData.name} ==========\n`);
+
+            console.log("Round ID          :", getData.roundId);
+            console.log("Price             :", getData.price, "USD");
+            console.log("Started At        :", getData.startedAt);
+            console.log("Updated At        :", getData.updatedAt);
+            console.log("Answered In Round :", getData.answeredInRound);
+            console.log("Feed Address :", getSelectedFeed.address);
+            console.log("Decimals     :", getData.decimals);
 
             console.log(`\n==============================\n`);
             break;
