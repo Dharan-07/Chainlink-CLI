@@ -7,7 +7,8 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const abi = [
     "function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
-    "function decimals() view returns (uint8)"
+    "function decimals() view returns (uint8)",
+    "function aggregator() external view returns (address)"
 ];
 
 const provider = new ethers.JsonRpcProvider(
@@ -21,9 +22,10 @@ async function getFeedData(selectedFeed) {
         provider
     );
 
-    const [decimals, latestData] = await Promise.all([
+    const [decimals, latestData, aggregator] = await Promise.all([
         contract.decimals(),
         contract.latestRoundData(),
+        contract.aggregator()
     ]);
 
     const {
@@ -42,6 +44,7 @@ async function getFeedData(selectedFeed) {
         startedAt: new Date(Number(startedAt) * 1000).toLocaleString(),
         updatedAt: new Date(Number(updatedAt) * 1000).toLocaleString(),
         answeredInRound: answeredInRound.toString(),
+        aggregatorAddress: aggregator.toString(),
     };
 }
 
