@@ -78,20 +78,21 @@ async function main() {
 
             console.log(`\n========== ${getData.name} ==========\n`);
 
-            console.log("Round ID          :", getData.roundId);
-            console.log("Price             :", getData.price, "USD");
-            console.log("Started At        :", getData.startedAt);
-            console.log("Updated At        :", getData.updatedAt);
-            console.log("Answered In Round :", getData.answeredInRound);
-            console.log("Feed Address :", getSelectedFeed.address);
-            console.log("Decimals     :", getData.decimals);
+            console.log("Round ID           :", getData.roundId);
+            console.log("Price              :", getData.price, "USD");
+            console.log("Started At         :", getData.startedAt);
+            console.log("Updated At         :", getData.updatedAt);
+            console.log("Answered In Round  :", getData.answeredInRound);
+            console.log("Feed Address       :", getSelectedFeed.address);
+            console.log("Decimals           :", getData.decimals);
+            console.log("Aggregator Address :", getData.aggregatorAddress)
 
             console.log(`\n==============================\n`);
             break;
 
         default:
             console.log("\n");
-            console.log("Unknown command");
+            console.log("Unknown command \n\n Usage : \n node index.js list \n node index.js price <symbol>\n node index.js get <symbol>");
     }
 
 
