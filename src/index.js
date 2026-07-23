@@ -87,7 +87,7 @@ async function main() {
             console.log("Updated At         :", getData.updatedAt);
             console.log("Answered In Round  :", getData.answeredInRound);
             console.log("Feed Address       :", getSelectedFeed.address);
-            console.log("Decimals           :", getData.decimals);
+            console.log("Decimals           :", getData.decimals.toString());
             console.log("Aggregator Address :", getData.aggregatorAddress)
 
             console.log(`\n==============================\n`);
@@ -96,6 +96,18 @@ async function main() {
         // 3. Added the "history" case
         case "history":
             const historyFeed = feeds[symbol];
+
+            if (!historyFeed) {
+                console.log("\n");
+                console.log("Unknown feed.");
+                console.log("\nAvailable feeds:");
+
+                Object.keys(feeds).forEach(feed => {
+                    console.log("-", feed);
+                });
+
+                return;
+            }
 
             console.log(`\nFetching last ${count} rounds for ${symbol}... Please wait.`);
             const historyData = await getHistory(historyFeed, count);
