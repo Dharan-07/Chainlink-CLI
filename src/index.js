@@ -1,8 +1,23 @@
 const { ethers } = require("ethers");
-const { getFeedData,getHistory } = require("./chainlink");
+const { getFeedData, getHistory } = require("./chainlink");
 
 
 const feeds = require("./feeds")
+
+function getFeedWithValidation(symbol) {
+    const feed = feeds[symbol];
+
+    if (!feed) {
+        console.log(`Unknown feed: ${symbol}`);
+        console.log("\nAvailable feeds:");
+
+        Object.keys(feeds).forEach(f => console.log("-", f));
+
+        process.exit(1);
+    }
+
+    return feed;
+}
 
 async function main() {
     /* 
@@ -16,7 +31,7 @@ async function main() {
     const command = process.argv[2]?.toLowerCase();
 
     const symbol = process.argv[3]?.toUpperCase(); // used to get the argument from the user 
-    const count = parseInt(process.argv[4], 10) || 5; 
+    const count = parseInt(process.argv[4], 10) || 5;
 
     switch (command) {
         case "list":
@@ -30,19 +45,7 @@ async function main() {
 
         case "price":
 
-            const selectedFeed = feeds[symbol]; // change BNB or USDT here
-
-            if (!selectedFeed) {
-                console.log("\n");
-                console.log("Unknown feed.");
-                console.log("\nAvailable feeds:");
-
-                Object.keys(feeds).forEach(feed => {
-                    console.log("-", feed);
-                });
-
-                return;
-            }
+            const selectedFeed = getFeedWithValidation(symbol); // change BNB or USDT here
 
             const data = await getFeedData(selectedFeed);
 
@@ -57,19 +60,7 @@ async function main() {
             break;
 
         case "get":
-            const getSelectedFeed = feeds[symbol]; // change BNB or USDT here
-
-            if (!getSelectedFeed) {
-                console.log("\n");
-                console.log("Unknown feed.");
-                console.log("\nAvailable feeds:");
-
-                Object.keys(feeds).forEach(feed => {
-                    console.log("-", feed);
-                });
-
-                return;
-            }
+            const getSelectedFeed = getFeedWithValidation(symbol); // change BNB or USDT here
 
             const getData = await getFeedData(getSelectedFeed);
 
@@ -95,25 +86,14 @@ async function main() {
 
         // 3. Added the "history" case
         case "history":
-            const historyFeed = feeds[symbol];
+            const historyFeed = getFeedWithValidation(symbol);
 
-            if (!historyFeed) {
-                console.log("\n");
-                console.log("Unknown feed.");
-                console.log("\nAvailable feeds:");
-
-                Object.keys(feeds).forEach(feed => {
-                    console.log("-", feed);
-                });
-
-                return;
-            }
 
             console.log(`\nFetching last ${count} rounds for ${symbol}... Please wait.`);
             const historyData = await getHistory(historyFeed, count);
 
             console.log(`\n========== ${symbol} History (Last ${historyData.length} rounds) ==========\n`);
-            
+
             if (historyData.length === 0) {
                 console.log("No historical data retrieved.");
             } else {
@@ -131,8 +111,6 @@ async function main() {
             console.log("\n");
             console.log("Unknown command \n\n Usage : \n node index.js list \n node index.js price <symbol>\n node index.js get <symbol>");
     }
-
-
 }
 
 main().catch((err) => {
