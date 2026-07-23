@@ -1,5 +1,5 @@
 const { ethers } = require("ethers");
-const { getFeedData } = require("./chainlink");
+const { getFeedData,getHistory } = require("./chainlink");
 
 
 const feeds = require("./feeds")
@@ -16,13 +16,16 @@ async function main() {
     const command = process.argv[2]?.toLowerCase();
 
     const symbol = process.argv[3]?.toUpperCase(); // used to get the argument from the user 
+    const count = parseInt(process.argv[4], 10) || 5; 
 
     switch (command) {
         case "list":
             console.log("\n");
+            console.log("List of Feeds :\n")
             Object.keys(feeds).forEach(feed => {
                 console.log("-", feed);
             });
+            console.log("\n");
             break;
 
         case "price":
@@ -88,6 +91,28 @@ async function main() {
             console.log("Aggregator Address :", getData.aggregatorAddress)
 
             console.log(`\n==============================\n`);
+            break;
+
+        // 3. Added the "history" case
+        case "history":
+            const historyFeed = feeds[symbol];
+
+            console.log(`\nFetching last ${count} rounds for ${symbol}... Please wait.`);
+            const historyData = await getHistory(historyFeed, count);
+
+            console.log(`\n========== ${symbol} History (Last ${historyData.length} rounds) ==========\n`);
+            
+            if (historyData.length === 0) {
+                console.log("No historical data retrieved.");
+            } else {
+                historyData.forEach((round, index) => {
+                    console.log(`[Round ${index + 1}]`);
+                    console.log("  Round ID   :", round.roundId);
+                    console.log("  Price      :", round.price, "USD");
+                    console.log("  Updated At :", round.updatedAt);
+                    console.log("-----------------------------------------");
+                });
+            }
             break;
 
         default:
